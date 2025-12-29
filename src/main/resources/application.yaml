@@ -15,3 +15,6 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: false
+springdoc:
+  swagger-ui:
+    tryItOutEnabled: true
