@@ -1,6 +1,7 @@
 package br.com.caio.desafio_tecnico.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +9,10 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.caio.desafio_tecnico.controller.dto.response.AwardsIntervalResponse;
 import br.com.caio.desafio_tecnico.domain.Movie;
 import br.com.caio.desafio_tecnico.domain.Producer;
 import br.com.caio.desafio_tecnico.domain.dto.AwardInterval;
-import br.com.caio.desafio_tecnico.controller.dto.response.AwardsIntervalResponse;
 import br.com.caio.desafio_tecnico.repository.MovieRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -78,11 +79,18 @@ public class AwardIntervalService {
                 .max()
                 .orElse(0);
 
+        Comparator<AwardInterval> ORDER =
+                Comparator.comparing(AwardInterval::producer)
+                        .thenComparingInt(AwardInterval::previousWin)
+                        .thenComparingInt(AwardInterval::followingWin);
+
         List<AwardInterval> min = intervals.stream()
                 .filter(interval -> interval.interval() == minInterval)
+                .sorted(ORDER)
                 .toList();
         List<AwardInterval> max = intervals.stream()
                 .filter(interval -> interval.interval() == maxInterval)
+                .sorted(ORDER)
                 .toList();
 
         return new AwardsIntervalResponse(min, max);
