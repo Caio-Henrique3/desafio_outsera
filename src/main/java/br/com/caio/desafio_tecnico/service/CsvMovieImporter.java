@@ -7,14 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import br.com.caio.desafio_tecnico.domain.Movie;
 import br.com.caio.desafio_tecnico.domain.Producer;
 import br.com.caio.desafio_tecnico.domain.Studio;
+import br.com.caio.desafio_tecnico.exception.BusinessException;
+import br.com.caio.desafio_tecnico.exception.CsvFileNotFoundException;
+import br.com.caio.desafio_tecnico.exception.CsvParsingException;
 import br.com.caio.desafio_tecnico.repository.MovieRepository;
 import br.com.caio.desafio_tecnico.repository.ProducerRepository;
 import br.com.caio.desafio_tecnico.repository.StudioRepository;
@@ -25,40 +26,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CsvMovieImporter {
 
-    private static final Logger logger = LoggerFactory.getLogger(CsvMovieImporter.class);
-
     private final MovieRepository movieRepository;
     private final StudioRepository studioRepository;
     private final ProducerRepository producerRepository;
 
     public void importMoviesFromResource(String resourcePath) {
         ClassPathResource resource = new ClassPathResource(resourcePath);
+        if (!resource.exists()) {
+            throw new CsvFileNotFoundException("CSV nao encontrado: " + resourcePath);
+        }
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
             String line = reader.readLine();
             if (line == null) {
-                logger.warn("CSV vazio: {}", resourcePath);
-
-                return;
+                throw new CsvParsingException("CSV vazio: " + resourcePath);
             }
 
+            int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
+                lineNumber++;
                 if (line.isBlank()) {
                     continue;
                 }
 
                 String[] columns = line.split(";", -1);
                 if (columns.length < 5) {
-                    logger.warn("Linha ignorada por formato inválido: {}", line);
-
-                    continue;
+                    throw new CsvParsingException(
+                            "Linha " + lineNumber + " invalida: esperado 5 colunas, recebido " + columns.length
+                    );
                 }
 
                 Integer year = parseYear(columns[0]);
                 if (year == null) {
-                    logger.warn("Ano inválido na linha: {}", line);
-
-                    continue;
+                    throw new CsvParsingException("Ano invalido na linha " + lineNumber + ": " + columns[0]);
                 }
 
                 movieRepository.save(
@@ -72,7 +73,7 @@ public class CsvMovieImporter {
                 );
             }
         } catch (IOException ex) {
-            throw new IllegalStateException("Falha ao ler CSV: " + resourcePath, ex);
+            throw new BusinessException("Falha ao ler CSV: " + resourcePath, ex);
         }
     }
 
