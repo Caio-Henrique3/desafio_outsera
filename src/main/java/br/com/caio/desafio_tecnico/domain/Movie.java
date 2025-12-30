@@ -41,6 +41,7 @@ public class Movie {
     @Column(nullable = false)
     private boolean winner;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "movie_producers",
@@ -49,6 +50,7 @@ public class Movie {
     )
     private Set<Producer> producers = new HashSet<>();
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "movie_studios",
