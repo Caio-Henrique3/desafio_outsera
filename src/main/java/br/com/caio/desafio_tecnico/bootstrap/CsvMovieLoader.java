@@ -2,6 +2,7 @@ package br.com.caio.desafio_tecnico.bootstrap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,12 @@ public class CsvMovieLoader implements ApplicationRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvMovieLoader.class);
 
-    private static final String CSV_PATH = "csv/movielist.csv";
-
     private final MovieRepository movieRepository;
 
     private final CsvMovieImporter importer;
+
+    @Value("${app.csv.path:csv/movielist.csv}")
+    private String csvPath;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -31,7 +33,7 @@ public class CsvMovieLoader implements ApplicationRunner {
             return;
         }
 
-        importer.importMoviesFromResource(CSV_PATH);
+        importer.importMoviesFromResource(csvPath);
 
         logger.info("Import CSV concluído.");
     }

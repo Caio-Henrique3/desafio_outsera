@@ -23,3 +23,6 @@ logging:
 springdoc:
   swagger-ui:
     tryItOutEnabled: true
+app:
+  csv:
+    path: csv/movielist.csv
