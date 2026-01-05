@@ -25,7 +25,7 @@ import br.com.caio.desafio_tecnico.repository.MovieRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@TestPropertySource(properties = "app.csv.path=csv/movielist-no-tie.csv")
+@TestPropertySource(properties = "app.csv.path=csv/movielist.csv")
 class AwardIntervalControllerIT {
 
     @Autowired
@@ -58,10 +58,10 @@ class AwardIntervalControllerIT {
         );
 
         List<AwardInterval> expectedMin = List.of(
-                new AwardInterval("Producer Three", 1, 2007, 2008)
+                new AwardInterval("Joel Silver", 1, 1990, 1991)
         );
         List<AwardInterval> expectedMax = List.of(
-                new AwardInterval("Producer Two", 4, 2001, 2005)
+                new AwardInterval("Matthew Vaughn", 13, 2002, 2015)
         );
 
         assertThat(actual.min()).containsExactlyInAnyOrderElementsOf(expectedMin);

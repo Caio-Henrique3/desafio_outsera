@@ -16,4 +16,4 @@ logging:
     org.hibernate.orm.jdbc.bind: WARN
 app:
   csv:
-    path: csv/movielist-no-tie.csv
+    path: csv/movielist.csv
