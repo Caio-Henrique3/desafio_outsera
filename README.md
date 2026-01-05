@@ -6,7 +6,7 @@
 - [x] Banco em memória com H2 (sem dependência externa)
 - [x] Endpoint REST para intervalos min/max de prêmios
 - [x] Swagger UI disponível
-- [x] Testes de integração com datasets controlados (independentes do CSV externo)
+- [x] Testes de integração cobrindo o CSV padrão e outro com um cenário de empate
 - [x] Instruções para rodar o projeto
 
 ## Decisões técnicas
@@ -29,10 +29,10 @@ mvn clean test
 (perfil `test` é ativado automaticamente)
 ```
 
-Os testes de integração usam CSVs pequenos em `src/test/resources/csv`:
+Os testes de integração usam o CSV padrão e um CSV de empate:
 
-- `movielist-no-tie.csv` (cenário sem empate)
-- `movielist-tie.csv` (cenário com empate em min/max)
+- CSV padrão: `src/main/resources/csv/movielist.csv`
+- CSV de empate: `src/test/resources/csv/movielist-tie.csv`
 
 ## Endpoint
 
@@ -79,7 +79,7 @@ Exemplo de retorno:
 
 - CSV: caminho configurável via `app.csv.path` (padrão: `src/main/resources/csv/movielist.csv`)
 - Importação falha no startup caso o CSV esteja ausente ou inválido.
-- Nos testes, o CSV é trocado via `@TestPropertySource` para cada cenário.
+- Nos testes, o CSV é trocado via `@TestPropertySource` para o cenário de empate.
 - Importação não roda se a base já tiver dados (ver `CsvMovieLoader`).
 - Perfis:
   - `application.yml` (padrão)
